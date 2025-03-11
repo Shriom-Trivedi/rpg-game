@@ -31,9 +31,11 @@ type Player struct {
 }
 
 type Game struct {
-	player  *Player
-	enemies []*Enemy
-	potions []*Potion
+	player      *Player
+	enemies     []*Enemy
+	potions     []*Potion
+	tilemapJSON *TilemapJSON
+	tilemapImg  *ebiten.Image
 }
 
 func (g *Game) Update() error {
@@ -70,7 +72,7 @@ func (g *Game) Update() error {
 		}
 	}
 
-	for _, potion := range g.potions{
+	for _, potion := range g.potions {
 		if g.player.X > potion.X {
 			g.player.Health += potion.AmtHeal
 			fmt.Printf("Picked up potion! Health: %d\n", g.player.Health)
@@ -84,6 +86,30 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	screen.Fill(color.RGBA{120, 180, 255, 255})
 
 	op := &ebiten.DrawImageOptions{}
+
+	// loop over the layers
+	tilesetColumns := g.tilemapImg.Bounds().Dx() / 16 // Number of tiles per row in tileset
+	for _, layer := range g.tilemapJSON.Layers {
+		for index, id := range layer.Data {
+			if id == 0 {
+				continue
+			}
+			x := (index % layer.Width) * 16 // tile position x
+			y := (index / layer.Width) * 16 // tile position y
+
+			srcX := (id - 1) % tilesetColumns * 16
+			srcY := (id - 1) / tilesetColumns * 16
+
+			op.GeoM.Translate(float64(x), float64(y))
+
+			screen.DrawImage(
+				g.tilemapImg.SubImage(image.Rect(srcX, srcY, srcX+600, srcY+600)).(*ebiten.Image),
+				op,
+			)
+
+			op.GeoM.Reset()
+		}
+	}
 
 	// Scale factors (reduce size)
 	scaleX := 0.3 // Shrinks width to 50%
@@ -171,23 +197,35 @@ func main() {
 		// handle error
 		log.Fatal(err)
 	}
-	
+
 	potionImg, _, err := ebitenutil.NewImageFromFile("../assets/images/meat.png")
 	if err != nil {
 		// handle error
 		log.Fatal(err)
 	}
 
+	tilemapImg, _, err := ebitenutil.NewImageFromFile("../assets/images/Tilemap_Flat.png")
+	if err != nil {
+		// handle error
+		log.Fatal(err)
+	}
+
+	// Load tile map
+	tilemapJSON, err := NewTilemapJSON("../assets/maps/spawn.tmj")
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	game := Game{
 		player: &Player{
-			Sprite: &Sprite {
+			Sprite: &Sprite{
 				Img: playerImg,
 				X:   50,
 				Y:   50,
 			},
 			Health: 5,
 		},
-			
+
 		enemies: []*Enemy{
 			{
 				&Sprite{
@@ -216,6 +254,8 @@ func main() {
 				5,
 			},
 		},
+		tilemapJSON: tilemapJSON,
+		tilemapImg:  tilemapImg,
 	}
 
 	if err := ebiten.RunGame(&game); err != nil {
