@@ -13,11 +13,11 @@
             "scaleInEditor": 1
         },
         "spawn.tmj": {
-            "scale": 0.75,
+            "scale": 1.5,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 266,
-                "y": 318
+                "x": 207.66666666666663,
+                "y": 175
             }
         }
     },
