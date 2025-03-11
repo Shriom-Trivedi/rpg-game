@@ -186,32 +186,32 @@ func main() {
 	ebiten.SetWindowSize(640, 480)
 	ebiten.SetWindowResizingMode(ebiten.WindowResizingModeEnabled)
 
-	playerImg, _, err := ebitenutil.NewImageFromFile("../assets/images/warrior-main.png")
+	playerImg, _, err := ebitenutil.NewImageFromFile("assets/images/warrior-main.png")
 	if err != nil {
 		// handle error
 		log.Fatal(err)
 	}
 
-	goblinFireImg, _, err := ebitenutil.NewImageFromFile("../assets/images/goblin_fire.png")
+	goblinFireImg, _, err := ebitenutil.NewImageFromFile("assets/images/goblin_fire.png")
 	if err != nil {
 		// handle error
 		log.Fatal(err)
 	}
 
-	potionImg, _, err := ebitenutil.NewImageFromFile("../assets/images/meat.png")
+	potionImg, _, err := ebitenutil.NewImageFromFile("assets/images/meat.png")
 	if err != nil {
 		// handle error
 		log.Fatal(err)
 	}
 
-	tilemapImg, _, err := ebitenutil.NewImageFromFile("../assets/images/Tilemap_Flat.png")
+	tilemapImg, _, err := ebitenutil.NewImageFromFile("assets/images/Tilemap_Flat.png")
 	if err != nil {
 		// handle error
 		log.Fatal(err)
 	}
 
 	// Load tile map
-	tilemapJSON, err := NewTilemapJSON("../assets/maps/spawn.tmj")
+	tilemapJSON, err := NewTilemapJSON("assets/maps/spawn.tmj")
 	if err != nil {
 		log.Fatal(err)
 	}
