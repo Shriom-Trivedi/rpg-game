@@ -63,6 +63,12 @@ func (g *Game) Update() error {
 
 	// Add camera to follow player
 	g.cam.FollowTarget(g.player.X + 8, g.player.Y + 8, 320, 240)
+	g.cam.Constrain(
+		float64(g.tilemapJSON.Layers[0].Width) * 16,
+		float64(g.tilemapJSON.Layers[0].Height) * 16,
+		320,
+		240,
+	)
 
 	return nil 
 }

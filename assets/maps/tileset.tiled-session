@@ -8,7 +8,14 @@
         "."
     ],
     "fileStates": {
+        "buildings.tsj": {
+            "dynamicWrapping": true
+        },
+        "ground.tsj": {
+            "dynamicWrapping": false
+        },
         "ground.tsx": {
+            "dynamicWrapping": false,
             "scaleInDock": 1,
             "scaleInEditor": 1
         },
@@ -16,12 +23,12 @@
             "scale": 1.5,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 207.66666666666663,
-                "y": 175
+                "x": 217.33333333333331,
+                "y": 190.33333333333334
             }
         }
     },
-    "last.imagePath": "D:/works/go/assets_for_projects/Tiny Swords - asset pack/Tiny Swords/Terrain/Ground",
+    "last.imagePath": "D:/works/go/go-rpg-game/assets/buildings",
     "map.height": 80,
     "map.lastUsedFormat": "json",
     "map.tileHeight": 16,
@@ -36,9 +43,10 @@
         "ground.tsx",
         "spawn.tmj"
     ],
-    "tileset.lastUsedFormat": "tsx",
+    "tileset.lastUsedFormat": "json",
     "tileset.tileSize": {
         "height": 16,
         "width": 16
-    }
+    },
+    "tileset.type": 1
 }

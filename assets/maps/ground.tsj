@@ -1,0 +1,14 @@
+{ "columns":40,
+ "image":"..\/..\/..\/assets_for_projects\/Tiny Swords - asset pack\/Tiny Swords\/Terrain\/Ground\/Tilemap_Flat.png",
+ "imageheight":256,
+ "imagewidth":640,
+ "margin":0,
+ "name":"grounds",
+ "spacing":0,
+ "tilecount":640,
+ "tiledversion":"1.11.2",
+ "tileheight":16,
+ "tilewidth":16,
+ "type":"tileset",
+ "version":"1.10"
+}
