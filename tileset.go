@@ -59,7 +59,6 @@ type DynTileset struct {
 func (d DynTileset) Img(id int) *ebiten.Image {
 	id -= d.gid
 	
-	fmt.Println(d.imgs, id)
 	return d.imgs[id - 3] // Subtracting 3, since buildings.json id starting from 3. TODO: fix these weird indexes 
 }
 
