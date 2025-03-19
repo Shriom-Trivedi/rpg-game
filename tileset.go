@@ -57,6 +57,7 @@ type DynTileset struct {
 
 func (d DynTileset) Img(id int) *ebiten.Image {
 	id -= d.gid
+
 	return d.imgs[id]
 }
 
@@ -67,7 +68,7 @@ func NewTileset(path string, gid int) (Tileset, error) {
 		return nil, err
 	}
 
-	if strings.Contains(path, "buildings") {
+	if strings.Contains(path, "buildings") || strings.Contains(path, "water") {
 		// return dyn tileset
 		var dynTilesetJSON DynTilesetJSON
 		err = json.Unmarshal(contents, &dynTilesetJSON)
@@ -87,7 +88,6 @@ func NewTileset(path string, gid int) (Tileset, error) {
 			tileJSONPath = strings.TrimPrefix(tileJSONPath, "../")
 			tileJSONPath = strings.TrimPrefix(tileJSONPath, "../")
 			tileJSONPath = filepath.Join("assets/", tileJSONPath)
-
 			img, _, err := ebitenutil.NewImageFromFile(tileJSONPath)
 			if err != nil {
 				return nil, err

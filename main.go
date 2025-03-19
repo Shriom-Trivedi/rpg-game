@@ -91,11 +91,22 @@ func (g *Game) Draw(screen *ebiten.Image) {
 			y := (index / layer.Width) * 16 // tile position y
 
 			img := g.tilesets[layerIndex].Img(id)
-			op.GeoM.Translate(float64(x), float64(y))
+
+
+			// *********** TODO: fix the yoffset issue. This is just a temporary fix.
+			// Calculate Y offset (adjust based on image height)
+			tileHeight := img.Bounds().Dy() // Get actual height
+			yOffset := tileHeight - 16      // Adjust if needed
+
+			op.GeoM.Translate(float64(x), float64(y-yOffset)) // Shift up by yOffset
+			// ***********
+
+			// op.GeoM.Translate(float64(x), float64(y))
 			op.GeoM.Translate(g.cam.X, g.cam.Y)
 
+			// fmt.Printf("Drawing tile ID %d at X=%d, Y=%d\n", id, x, y)
 			screen.DrawImage(img, op)
- 
+
 			// srcX := (id - 1) % tilesetColumns * 16
 			// srcY := (id - 1) / tilesetColumns * 16
 
