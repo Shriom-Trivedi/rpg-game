@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"image"
 	"os"
 	"path/filepath"
@@ -56,6 +57,7 @@ type DynTileset struct {
 }
 
 func (d DynTileset) Img(id int) *ebiten.Image {
+	
 	id -= d.gid
 
 	return d.imgs[id]
