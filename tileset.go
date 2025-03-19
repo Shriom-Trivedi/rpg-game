@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"image"
 	"os"
 	"path/filepath"
@@ -34,7 +33,7 @@ func (u *UniformTilset) Img(id int) *ebiten.Image {
 
 	return u.img.SubImage(
 		image.Rect(
-			srcX, srcY, srcX+16, srcX+16,
+			srcX, srcY, srcX+16, srcY+16,
 		),
 	).(*ebiten.Image)
 }
@@ -58,8 +57,7 @@ type DynTileset struct {
 
 func (d DynTileset) Img(id int) *ebiten.Image {
 	id -= d.gid
-	
-	return d.imgs[id - 3] // Subtracting 3, since buildings.json id starting from 3. TODO: fix these weird indexes 
+	return d.imgs[id]
 }
 
 func NewTileset(path string, gid int) (Tileset, error) {

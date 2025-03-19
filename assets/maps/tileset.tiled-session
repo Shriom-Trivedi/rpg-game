@@ -9,10 +9,17 @@
     ],
     "fileStates": {
         "buildings.tsj": {
+            "dynamicWrapping": true,
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "buildings_1.tsj": {
             "dynamicWrapping": true
         },
         "ground.tsj": {
-            "dynamicWrapping": false
+            "dynamicWrapping": false,
+            "scaleInDock": 1,
+            "scaleInEditor": 1
         },
         "ground.tsx": {
             "dynamicWrapping": false,
@@ -21,10 +28,10 @@
         },
         "spawn.tmj": {
             "scale": 1.5,
-            "selectedLayer": 0,
+            "selectedLayer": 1,
             "viewCenter": {
-                "x": 217.33333333333331,
-                "y": 190.33333333333334
+                "x": 220,
+                "y": 193.99999999999997
             }
         }
     },
@@ -36,12 +43,15 @@
     "map.width": 100,
     "openFiles": [
         "spawn.tmj",
-        "ground.tsx"
+        "ground.tsj",
+        "buildings.tsj"
     ],
     "project": "tileset.tiled-project",
     "recentFiles": [
-        "ground.tsx",
-        "spawn.tmj"
+        "buildings.tsj",
+        "ground.tsj",
+        "spawn.tmj",
+        "ground.tsx"
     ],
     "tileset.lastUsedFormat": "json",
     "tileset.tileSize": {

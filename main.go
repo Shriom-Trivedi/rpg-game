@@ -90,7 +90,6 @@ func (g *Game) Draw(screen *ebiten.Image) {
 			x := (index % layer.Width) * 16 // tile position x
 			y := (index / layer.Width) * 16 // tile position y
 
-			// fmt.Println(g.tilesets[layerIndex], id)
 			img := g.tilesets[layerIndex].Img(id)
 			op.GeoM.Translate(float64(x), float64(y))
 			op.GeoM.Translate(g.cam.X, g.cam.Y)
