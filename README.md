@@ -3,7 +3,7 @@
 ![Game Screenshot](image.png)
 
 ## Overview
-Welcome to **My Awesome Go Game**, a fast-paced and exciting game built using [Ebitengine](https://ebiten.org/)! This game combines fun gameplay mechanics with smooth performance, making it a must-play for Go and game development enthusiasts.
+Welcome to **A knight of time**, a fast-paced and exciting game built using [Ebitengine](https://ebiten.org/)! This game combines fun gameplay mechanics with smooth performance, making it a must-play for Go and game development enthusiasts.
 
 ## Features
 - 🎮 **Smooth gameplay** powered by Ebitengine
