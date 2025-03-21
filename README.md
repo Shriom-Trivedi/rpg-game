@@ -1,4 +1,4 @@
-# My Awesome Go Game
+# A knight of time
 
 ![Game Screenshot](image.png)
 
