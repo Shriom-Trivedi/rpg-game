@@ -12,5 +12,5 @@ import (
 
 type Sprite struct {
 	Img  *ebiten.Image
-	X, Y float64
+	X, Y, Dx, Dy float64 // Dx is change in x and Dy is change in y.
 }

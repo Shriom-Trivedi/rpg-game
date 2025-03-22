@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"image"
 	"image/color"
 	"log"
@@ -9,7 +8,38 @@ import (
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
+	"github.com/hajimehoshi/ebiten/v2/vector"
 )
+
+func checkCollisonHorizontal(sprite *entities.Sprite, colliders []image.Rectangle) {
+	for _, collider := range colliders {
+		if collider.Overlaps(
+			image.Rect(int(sprite.X), int(sprite.Y), int(sprite.X)+40, int(sprite.Y)+40),
+		) {
+
+			if sprite.Dx > 0.0 {
+				sprite.X = float64(collider.Min.X) - 40
+			} else if sprite.Dx < 0.0 {
+				sprite.X = float64(collider.Max.X)
+			}
+		}
+	}
+}
+
+func checkCollisonVertical(sprite *entities.Sprite, colliders []image.Rectangle) {
+	for _, collider := range colliders {
+		if collider.Overlaps(
+			image.Rect(int(sprite.X), int(sprite.Y), int(sprite.X)+40, int(sprite.Y)+40),
+		) {
+
+			if sprite.Dy > 0.0 {
+				sprite.Y = float64(collider.Min.Y) - 40
+			} else if sprite.Dy < 0.0 {
+				sprite.Y = float64(collider.Max.Y)
+			}
+		}
+	}
+}
 
 type Game struct {
 	player      *entities.Player
@@ -19,46 +49,72 @@ type Game struct {
 	tilesets    []Tileset
 	tilemapImg  *ebiten.Image
 	cam         *Camera
+	colliders   []image.Rectangle
 }
 
 func (g *Game) Update() error {
 
+	// set velocity to 0 initially to make it stop going in one direction on key press.
+	g.player.Dx = 0
+	g.player.Dy = 0
+
 	if ebiten.IsKeyPressed(ebiten.KeyD) || ebiten.IsKeyPressed(ebiten.KeyRight) {
-		g.player.X += 2
+		g.player.Dx += 2
 	}
 
 	if ebiten.IsKeyPressed(ebiten.KeyA) || ebiten.IsKeyPressed(ebiten.KeyLeft) {
-		g.player.X -= 2
+		g.player.Dx -= 2
 	}
 
 	if ebiten.IsKeyPressed(ebiten.KeyW) || ebiten.IsKeyPressed(ebiten.KeyUp) {
-		g.player.Y -= 2
+		g.player.Dy -= 2
 	}
 
 	if ebiten.IsKeyPressed(ebiten.KeyS) || ebiten.IsKeyPressed(ebiten.KeyDown) {
-		g.player.Y += 2
+		g.player.Dy += 2
 	}
 
+	g.player.X += g.player.Dx
+
+	checkCollisonHorizontal(g.player.Sprite, g.colliders)
+
+	g.player.Y += g.player.Dy
+
+	checkCollisonVertical(g.player.Sprite, g.colliders)
+
+
 	for _, enemy := range g.enemies {
+		
+		enemy.Dx = 0.0
+		enemy.Dy = 0.0
+
 		if enemy.FollowsPlayer {
 			if enemy.X < g.player.X {
-				enemy.X += 1
+				enemy.Dx += 1
 			} else if enemy.X > g.player.X {
-				enemy.X -= 1
+				enemy.Dx -= 1
 			}
 
 			if enemy.Y < g.player.Y {
-				enemy.Y += 1
+				enemy.Dy += 1
 			} else if enemy.Y > g.player.Y {
-				enemy.Y -= 1
+				enemy.Dy -= 1
 			}
 		}
+
+		enemy.X += enemy.Dx
+
+		checkCollisonHorizontal(enemy.Sprite, g.colliders)
+
+		enemy.Y += enemy.Dy
+
+		checkCollisonVertical(enemy.Sprite, g.colliders)
 	}
 
 	for _, potion := range g.potions {
 		if g.player.X > potion.X {
 			g.player.Health += potion.AmtHeal
-			fmt.Printf("Picked up potion! Health: %d\n", g.player.Health)
+			// fmt.Printf("Picked up potion! Health: %d\n", g.player.Health)
 		}
 	}
 
@@ -91,7 +147,6 @@ func (g *Game) Draw(screen *ebiten.Image) {
 			y := (index / layer.Width) * 16 // tile position y
 
 			img := g.tilesets[layerIndex].Img(id)
-
 
 			// *********** TODO: fix the yoffset issue. This is just a temporary fix.
 			// Calculate Y offset (adjust based on image height)
@@ -187,6 +242,17 @@ func (g *Game) Draw(screen *ebiten.Image) {
 		op.GeoM.Reset()
 
 	}
+
+	for _, collider := range g.colliders {
+		vector.StrokeRect(
+			screen,
+			float32(collider.Min.X)+float32(g.cam.X),
+			float32(collider.Min.Y)+float32(g.cam.Y),
+			float32(collider.Dx()),
+			float32(collider.Dy()),
+			1.0, color.RGBA{255, 0, 0, 255}, true,
+		)
+	}
 }
 
 func (g *Game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeight int) {
@@ -273,8 +339,11 @@ func main() {
 		},
 		tilemapJSON: tilemapJSON,
 		tilemapImg:  tilemapImg,
-		cam:         NewCamera(50, 50),
 		tilesets:    tilesets,
+		cam:         NewCamera(50, 50),
+		colliders: []image.Rectangle{
+			image.Rect(100, 100, 116, 116),
+		},
 	}
 
 	if err := ebiten.RunGame(&game); err != nil {
