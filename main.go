@@ -4,6 +4,7 @@ import (
 	"image"
 	"image/color"
 	"log"
+	"rpg-game-go/animations"
 	"rpg-game-go/entities"
 	"rpg-game-go/spritesheet"
 
@@ -43,25 +44,21 @@ func checkCollisonVertical(sprite *entities.Sprite, colliders []image.Rectangle)
 }
 
 type Game struct {
-	player            *entities.Player
-	playerSpriteSheet *spritesheet.Spritesheet
-	animationFrame    int
-	enemies           []*entities.Enemy
-	potions           []*entities.Potion
-	tilemapJSON       *TilemapJSON
-	tilesets          []Tileset
-	tilemapImg        *ebiten.Image
-	cam               *Camera
-	colliders         []image.Rectangle
+	player                 *entities.Player
+	playerSpriteSheet      *spritesheet.Spritesheet
+	playerRunningAnimation *animations.Animation
+	animationFrame         int
+	enemies                []*entities.Enemy
+	potions                []*entities.Potion
+	tilemapJSON            *TilemapJSON
+	tilesets               []Tileset
+	tilemapImg             *ebiten.Image
+	cam                    *Camera
+	colliders              []image.Rectangle
 }
 
 func (g *Game) Update() error {
-
-	g.animationFrame++
-	if g.animationFrame > 5 {
-		g.animationFrame = 0
-	}
-
+	g.playerRunningAnimation.Update()
 	// set velocity to 0 initially to make it stop going in one direction on key press.
 	g.player.Dx = 0
 	g.player.Dy = 0
@@ -196,7 +193,7 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	screen.DrawImage(
 		g.player.Img.SubImage(
 			// image.Rect(0, 0, 150, 150),
-			g.playerSpriteSheet.Rect(g.animationFrame),
+			g.playerSpriteSheet.Rect(g.playerRunningAnimation.Frame()),
 		).(*ebiten.Image),
 		op,
 	)
@@ -308,6 +305,7 @@ func main() {
 	}
 
 	playerSpriteSheet := spritesheet.NewSpriteSheet(6, 8, 192)
+	playerRunningAnimation := animations.NewAnimation(6, 11, 1, 10.0)
 
 	game := Game{
 		player: &entities.Player{
@@ -318,7 +316,8 @@ func main() {
 			},
 			Health: 5,
 		},
-		playerSpriteSheet: playerSpriteSheet,
+		playerSpriteSheet:      playerSpriteSheet,
+		playerRunningAnimation: playerRunningAnimation,
 		enemies: []*entities.Enemy{
 			{
 				Sprite: &entities.Sprite{
