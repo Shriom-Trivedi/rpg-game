@@ -44,21 +44,19 @@ func checkCollisonVertical(sprite *entities.Sprite, colliders []image.Rectangle)
 }
 
 type Game struct {
-	player                 *entities.Player
-	playerSpriteSheet      *spritesheet.Spritesheet
-	playerRunningAnimation *animations.Animation
-	animationFrame         int
-	enemies                []*entities.Enemy
-	potions                []*entities.Potion
-	tilemapJSON            *TilemapJSON
-	tilesets               []Tileset
-	tilemapImg             *ebiten.Image
-	cam                    *Camera
-	colliders              []image.Rectangle
+	player            *entities.Player
+	playerSpriteSheet *spritesheet.Spritesheet
+	animationFrame    int
+	enemies           []*entities.Enemy
+	potions           []*entities.Potion
+	tilemapJSON       *TilemapJSON
+	tilesets          []Tileset
+	tilemapImg        *ebiten.Image
+	cam               *Camera
+	colliders         []image.Rectangle
 }
 
 func (g *Game) Update() error {
-	g.playerRunningAnimation.Update()
 	// set velocity to 0 initially to make it stop going in one direction on key press.
 	g.player.Dx = 0
 	g.player.Dy = 0
@@ -86,6 +84,15 @@ func (g *Game) Update() error {
 	g.player.Y += g.player.Dy
 
 	checkCollisonVertical(g.player.Sprite, g.colliders)
+
+	activeAnimation := g.player.ActiveAnimation(
+		int(g.player.Dx),
+		int(g.player.Dy),
+	)
+
+	if activeAnimation != nil {
+		activeAnimation.Update()
+	}
 
 	for _, enemy := range g.enemies {
 
@@ -189,11 +196,21 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	op.GeoM.Translate(g.player.X, g.player.Y)
 	op.GeoM.Translate(g.cam.X, g.cam.Y)
 
+	activeAnimation := g.player.ActiveAnimation(
+		int(g.player.Dx),
+		int(g.player.Dy),
+	)
+
+	playerFrame := 0
+	if activeAnimation != nil {
+		playerFrame = activeAnimation.Frame()
+	}
+
 	// Draw our player
 	screen.DrawImage(
 		g.player.Img.SubImage(
 			// image.Rect(0, 0, 150, 150),
-			g.playerSpriteSheet.Rect(g.playerRunningAnimation.Frame()),
+			g.playerSpriteSheet.Rect(playerFrame),
 		).(*ebiten.Image),
 		op,
 	)
@@ -268,7 +285,7 @@ func main() {
 	ebiten.SetWindowSize(640, 480)
 	ebiten.SetWindowResizingMode(ebiten.WindowResizingModeEnabled)
 
-	playerImg, _, err := ebitenutil.NewImageFromFile("assets/images/warrior-main.png")
+	playerImg, _, err := ebitenutil.NewImageFromFile("assets/images/warrior-main-2.png")
 	if err != nil {
 		// handle error
 		log.Fatal(err)
@@ -305,7 +322,6 @@ func main() {
 	}
 
 	playerSpriteSheet := spritesheet.NewSpriteSheet(6, 8, 192)
-	playerRunningAnimation := animations.NewAnimation(6, 11, 1, 10.0)
 
 	game := Game{
 		player: &entities.Player{
@@ -315,9 +331,14 @@ func main() {
 				Y:   50,
 			},
 			Health: 5,
+			Animations: map[entities.PlayerState]*animations.Animation{
+				entities.Right: animations.NewAnimation(6, 11, 1, 8.0),
+				entities.Left:  animations.NewAnimation(48, 53, 1, 8.0),
+				entities.Down:  animations.NewAnimation(26, 30, 3, 8.0),
+				entities.Up:    animations.NewAnimation(38, 42, 3, 8.0),
+			},
 		},
 		playerSpriteSheet:      playerSpriteSheet,
-		playerRunningAnimation: playerRunningAnimation,
 		enemies: []*entities.Enemy{
 			{
 				Sprite: &entities.Sprite{
