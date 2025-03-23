@@ -7,17 +7,10 @@ import (
 
 type PlayerState uint8
 
-const (
-	Down PlayerState = iota
-	Up
-	Left
-	Right
-)
-
 type Player struct {
 	*Sprite
 	Health     uint
-	Animations map[PlayerState]*animations.Animation
+	Animations map[Direction]*animations.Animation
 	CombatComp *components.BasicCombat
 }
 

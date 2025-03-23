@@ -19,6 +19,7 @@ import (
 type Game struct {
 	player            *entities.Player
 	playerSpriteSheet *spritesheet.Spritesheet
+	enemySpriteSheet  *spritesheet.Spritesheet
 	animationFrame    int
 	enemies           []*entities.Enemy
 	potions           []*entities.Potion
@@ -67,6 +68,7 @@ func NewGame() *Game {
 	}
 
 	playerSpriteSheet := spritesheet.NewSpriteSheet(6, 8, 192)
+	enemySpriteSheet := spritesheet.NewSpriteSheet(6, 5, 192)
 
 	game := Game{
 		player: &entities.Player{
@@ -76,15 +78,16 @@ func NewGame() *Game {
 				Y:   50,
 			},
 			Health: 5,
-			Animations: map[entities.PlayerState]*animations.Animation{
-				entities.Right: animations.NewAnimation(6, 11, 1, 8.0),
-				entities.Left:  animations.NewAnimation(48, 53, 1, 8.0),
-				entities.Down:  animations.NewAnimation(26, 30, 3, 8.0),
-				entities.Up:    animations.NewAnimation(38, 42, 3, 8.0),
+			Animations: map[entities.Direction]*animations.Animation{
+				entities.Right: animations.NewAnimation(6, 11, 1, 20.0),
+				entities.Left:  animations.NewAnimation(48, 53, 1, 20.0),
+				entities.Down:  animations.NewAnimation(26, 30, 3, 20.0),
+				entities.Up:    animations.NewAnimation(38, 42, 3, 20.0),
 			},
 			CombatComp: components.NewBasicCombat(3, 1),
 		},
 		playerSpriteSheet: playerSpriteSheet,
+		enemySpriteSheet:  enemySpriteSheet,
 		enemies: []*entities.Enemy{
 			{
 				Sprite: &entities.Sprite{
@@ -93,7 +96,14 @@ func NewGame() *Game {
 					Y:   150,
 				},
 				FollowsPlayer: true,
-				CombatComp:    components.NewEnemyCombat(3, 1, 30),
+				// TODO: Fix the animation for enemy for up, down and left positions
+				Animations: map[entities.Direction]*animations.Animation{
+					entities.Right: animations.NewAnimation(7, 12, 1, 8.0),
+					entities.Left:  animations.NewAnimation(7, 12, 1, 8.0),
+					entities.Up:    animations.NewAnimation(7, 12, 1, 8.0),
+					entities.Down:  animations.NewAnimation(7, 12, 1, 8.0),
+				},
+				CombatComp: components.NewEnemyCombat(3, 1, 30),
 			},
 			{
 				Sprite: &entities.Sprite{
@@ -102,7 +112,13 @@ func NewGame() *Game {
 					Y:   100,
 				},
 				FollowsPlayer: false,
-				CombatComp:    components.NewEnemyCombat(3, 1, 30),
+				Animations: map[entities.Direction]*animations.Animation{
+					entities.Right: animations.NewAnimation(7, 12, 1, 8.0),
+					entities.Left:  animations.NewAnimation(7, 12, 1, 8.0),
+					entities.Down:  animations.NewAnimation(7, 12, 1, 8.0),
+					entities.Up:    animations.NewAnimation(7, 12, 1, 8.0),
+				},
+				CombatComp: components.NewEnemyCombat(3, 1, 30),
 			},
 		},
 		potions: []*entities.Potion{
@@ -191,6 +207,14 @@ func (g *Game) Update() error {
 		enemy.Y += enemy.Dy
 
 		checkCollisonVertical(enemy.Sprite, g.colliders)
+
+		enemyAnimation := enemy.ActiveAnimation(
+			int(enemy.Dx),
+			int(enemy.Dy),
+		)
+		if enemyAnimation != nil {
+			enemyAnimation.Update()
+		}
 	}
 
 	clicked := inpututil.IsMouseButtonJustPressed(ebiten.MouseButton0)
@@ -337,9 +361,20 @@ func (g *Game) Draw(screen *ebiten.Image) {
 		op.GeoM.Translate(enemy.X, enemy.Y)
 		op.GeoM.Translate(g.cam.X, g.cam.Y)
 
+		activeAnimation := enemy.ActiveAnimation(
+			int(enemy.Dx),
+			int(enemy.Dy),
+		)
+
+		enemyFrame := 0
+		if activeAnimation != nil {
+			enemyFrame = activeAnimation.Frame()
+		}
+
 		screen.DrawImage(
 			enemy.Img.SubImage(
-				image.Rect(0, 0, 150, 150),
+				// image.Rect(0, 0, 150, 150),
+				g.enemySpriteSheet.Rect(enemyFrame),
 			).(*ebiten.Image),
 			op,
 		)
