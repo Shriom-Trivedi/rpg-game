@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"image"
 	"image/color"
 	"log"
@@ -94,7 +93,7 @@ func NewGame() *Game {
 					Y:   150,
 				},
 				FollowsPlayer: true,
-				CombatComp:    components.NewBasicCombat(3, 1),
+				CombatComp:    components.NewEnemyCombat(3, 1, 30),
 			},
 			{
 				Sprite: &entities.Sprite{
@@ -103,7 +102,7 @@ func NewGame() *Game {
 					Y:   100,
 				},
 				FollowsPlayer: false,
-				CombatComp:    components.NewBasicCombat(3, 1),
+				CombatComp:    components.NewEnemyCombat(3, 1, 30),
 			},
 		},
 		potions: []*entities.Potion{
@@ -196,9 +195,11 @@ func (g *Game) Update() error {
 
 	clicked := inpututil.IsMouseButtonJustPressed(ebiten.MouseButton0)
 	cX, cY := ebiten.CursorPosition()
+	g.player.CombatComp.Update()
 
 	deadEnemies := make(map[int]struct{})
 	for index, enemy := range g.enemies {
+		enemy.CombatComp.Update()
 		rect := image.Rect(
 			int(enemy.X),
 			int(enemy.Y),
@@ -216,7 +217,7 @@ func (g *Game) Update() error {
 			}
 		}
 	}
-	fmt.Println("deadEnemies", deadEnemies)
+
 	// If there are dead enemies then remove them.
 	if len(deadEnemies) > 0 {
 		newEnemies := make([]*entities.Enemy, 0)
