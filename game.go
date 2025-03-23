@@ -1,15 +1,19 @@
 package main
 
 import (
+	"fmt"
 	"image"
 	"image/color"
 	"log"
 	"rpg-game-go/animations"
+	"rpg-game-go/components"
+	"rpg-game-go/constants"
 	"rpg-game-go/entities"
 	"rpg-game-go/spritesheet"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
+	"github.com/hajimehoshi/ebiten/v2/inpututil"
 	"github.com/hajimehoshi/ebiten/v2/vector"
 )
 
@@ -79,6 +83,7 @@ func NewGame() *Game {
 				entities.Down:  animations.NewAnimation(26, 30, 3, 8.0),
 				entities.Up:    animations.NewAnimation(38, 42, 3, 8.0),
 			},
+			CombatComp: components.NewBasicCombat(3, 1),
 		},
 		playerSpriteSheet: playerSpriteSheet,
 		enemies: []*entities.Enemy{
@@ -89,6 +94,7 @@ func NewGame() *Game {
 					Y:   150,
 				},
 				FollowsPlayer: true,
+				CombatComp:    components.NewBasicCombat(3, 1),
 			},
 			{
 				Sprite: &entities.Sprite{
@@ -97,6 +103,7 @@ func NewGame() *Game {
 					Y:   100,
 				},
 				FollowsPlayer: false,
+				CombatComp:    components.NewBasicCombat(3, 1),
 			},
 		},
 		potions: []*entities.Potion{
@@ -187,12 +194,46 @@ func (g *Game) Update() error {
 		checkCollisonVertical(enemy.Sprite, g.colliders)
 	}
 
-	for _, potion := range g.potions {
-		if g.player.X > potion.X {
-			g.player.Health += potion.AmtHeal
-			// fmt.Printf("Picked up potion! Health: %d\n", g.player.Health)
+	clicked := inpututil.IsMouseButtonJustPressed(ebiten.MouseButton0)
+	cX, cY := ebiten.CursorPosition()
+
+	deadEnemies := make(map[int]struct{})
+	for index, enemy := range g.enemies {
+		rect := image.Rect(
+			int(enemy.X),
+			int(enemy.Y),
+			int(enemy.X)+constants.Tilesize,
+			int(enemy.Y)+constants.Tilesize,
+		)
+
+		if cX > rect.Min.X && cX < rect.Max.X && cY > rect.Min.Y && cY < rect.Max.Y {
+			if clicked {
+				enemy.CombatComp.Damage(g.player.CombatComp.AttackPower())
+
+				if enemy.CombatComp.Health() <= 0 {
+					deadEnemies[index] = struct{}{}
+				}
+			}
 		}
 	}
+	fmt.Println("deadEnemies", deadEnemies)
+	// If there are dead enemies then remove them.
+	if len(deadEnemies) > 0 {
+		newEnemies := make([]*entities.Enemy, 0)
+		for index, enemy := range g.enemies {
+			if _, exists := deadEnemies[index]; !exists {
+				newEnemies = append(newEnemies, enemy)
+			}
+		}
+		g.enemies = newEnemies
+	}
+
+	// for _, potion := range g.potions {
+	// 	if g.player.X > potion.X {
+	// 		g.player.Health += potion.AmtHeal
+	// 		fmt.Printf("Picked up potion! Health: %d\n", g.player.Health)
+	// 	}
+	// }
 
 	// Add camera to follow player
 	g.cam.FollowTarget(g.player.X+8, g.player.Y+8, 320, 240)
