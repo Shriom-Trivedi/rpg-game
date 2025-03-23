@@ -5,6 +5,7 @@ import (
 	"image/color"
 	"log"
 	"rpg-game-go/entities"
+	"rpg-game-go/spritesheet"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
@@ -42,17 +43,24 @@ func checkCollisonVertical(sprite *entities.Sprite, colliders []image.Rectangle)
 }
 
 type Game struct {
-	player      *entities.Player
-	enemies     []*entities.Enemy
-	potions     []*entities.Potion
-	tilemapJSON *TilemapJSON
-	tilesets    []Tileset
-	tilemapImg  *ebiten.Image
-	cam         *Camera
-	colliders   []image.Rectangle
+	player            *entities.Player
+	playerSpriteSheet *spritesheet.Spritesheet
+	animationFrame    int
+	enemies           []*entities.Enemy
+	potions           []*entities.Potion
+	tilemapJSON       *TilemapJSON
+	tilesets          []Tileset
+	tilemapImg        *ebiten.Image
+	cam               *Camera
+	colliders         []image.Rectangle
 }
 
 func (g *Game) Update() error {
+
+	g.animationFrame++
+	if g.animationFrame > 5 {
+		g.animationFrame = 0
+	}
 
 	// set velocity to 0 initially to make it stop going in one direction on key press.
 	g.player.Dx = 0
@@ -82,9 +90,8 @@ func (g *Game) Update() error {
 
 	checkCollisonVertical(g.player.Sprite, g.colliders)
 
-
 	for _, enemy := range g.enemies {
-		
+
 		enemy.Dx = 0.0
 		enemy.Dy = 0.0
 
@@ -188,7 +195,8 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	// Draw our player
 	screen.DrawImage(
 		g.player.Img.SubImage(
-			image.Rect(0, 0, 150, 150),
+			// image.Rect(0, 0, 150, 150),
+			g.playerSpriteSheet.Rect(g.animationFrame),
 		).(*ebiten.Image),
 		op,
 	)
@@ -299,6 +307,8 @@ func main() {
 		log.Fatal(err)
 	}
 
+	playerSpriteSheet := spritesheet.NewSpriteSheet(6, 8, 192)
+
 	game := Game{
 		player: &entities.Player{
 			Sprite: &entities.Sprite{
@@ -308,7 +318,7 @@ func main() {
 			},
 			Health: 5,
 		},
-
+		playerSpriteSheet: playerSpriteSheet,
 		enemies: []*entities.Enemy{
 			{
 				Sprite: &entities.Sprite{
