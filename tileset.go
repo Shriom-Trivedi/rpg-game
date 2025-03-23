@@ -5,6 +5,7 @@ import (
 	"image"
 	"os"
 	"path/filepath"
+	"rpg-game-go/constants"
 	"strings"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -28,8 +29,8 @@ func (u *UniformTilset) Img(id int) *ebiten.Image {
 	// tilesetColumns := g.tilemapImg.Bounds().Dx() / 16 // Number of tiles per row in tileset
 	id -= u.gid
 
-	srcX := (id % 40) * 16
-	srcY := (id / 40) * 16
+	srcX := (id % constants.Tilesize) * 16
+	srcY := (id / constants.Tilesize) * 16
 
 	return u.img.SubImage(
 		image.Rect(
