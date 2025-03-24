@@ -79,10 +79,10 @@ func NewGame() *Game {
 			},
 			Health: 5,
 			Animations: map[entities.Direction]*animations.Animation{
-				entities.Right: animations.NewAnimation(6, 11, 1, 20.0),
-				entities.Left:  animations.NewAnimation(48, 53, 1, 20.0),
-				entities.Down:  animations.NewAnimation(26, 30, 3, 20.0),
-				entities.Up:    animations.NewAnimation(38, 42, 3, 20.0),
+				entities.Right: animations.NewAnimation(6, 11, 1, 8.0),
+				entities.Left:  animations.NewAnimation(48, 53, 1, 8.0),
+				entities.Down:  animations.NewAnimation(26, 30, 3, 8.0),
+				entities.Up:    animations.NewAnimation(38, 42, 3, 8.0),
 			},
 			CombatComp: components.NewBasicCombat(3, 1),
 		},
@@ -96,7 +96,6 @@ func NewGame() *Game {
 					Y:   150,
 				},
 				FollowsPlayer: true,
-				// TODO: Fix the animation for enemy for up, down and left positions
 				Animations: map[entities.Direction]*animations.Animation{
 					entities.Right: animations.NewAnimation(7, 12, 1, 8.0),
 					entities.Left:  animations.NewAnimation(7, 12, 1, 8.0),
