@@ -30,3 +30,7 @@ func (p *Player) ActiveAnimation(dx, dy int) *animations.Animation {
 
 	return nil
 }
+
+func (p *Player) CombatAnimation(button Direction) *animations.Animation {
+	return p.Animations[Direction(button)]
+}

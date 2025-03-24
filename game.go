@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"image"
 	"image/color"
 	"log"
@@ -79,10 +80,11 @@ func NewGame() *Game {
 			},
 			Health: 5,
 			Animations: map[entities.Direction]*animations.Animation{
-				entities.Right: animations.NewAnimation(6, 11, 1, 8.0),
-				entities.Left:  animations.NewAnimation(48, 53, 1, 8.0),
-				entities.Down:  animations.NewAnimation(26, 30, 3, 8.0),
-				entities.Up:    animations.NewAnimation(38, 42, 3, 8.0),
+				entities.Right:          animations.NewAnimation(6, 11, 1, 8.0),
+				entities.Left:           animations.NewAnimation(48, 53, 1, 8.0),
+				entities.Down:           animations.NewAnimation(26, 30, 3, 8.0),
+				entities.Up:             animations.NewAnimation(38, 42, 3, 8.0),
+				entities.MouseLeftClick: animations.NewAnimation(12, 17, 1, 1.0),
 			},
 			CombatComp: components.NewBasicCombat(3, 1),
 		},
@@ -180,6 +182,22 @@ func (g *Game) Update() error {
 		activeAnimation.Update()
 	}
 
+	clicked := inpututil.IsMouseButtonJustPressed(ebiten.MouseButton0)
+
+	if clicked {
+		g.player.CombatComp.Attack()
+		g.player.CombatAnimation(entities.MouseLeftClick).Reset()
+	}
+
+	if g.player.CombatComp.Attacking() {
+		playerCombatAnimation := g.player.CombatAnimation(entities.MouseLeftClick)
+		playerCombatAnimation.Update()
+
+		if playerCombatAnimation.IsLastFrame() {
+			g.player.CombatComp.AttackingStop()
+		}
+	}
+
 	for _, enemy := range g.enemies {
 
 		enemy.Dx = 0.0
@@ -216,9 +234,16 @@ func (g *Game) Update() error {
 		}
 	}
 
-	clicked := inpututil.IsMouseButtonJustPressed(ebiten.MouseButton0)
 	cX, cY := ebiten.CursorPosition()
 	g.player.CombatComp.Update()
+
+	// player rectangle
+	pRect := image.Rect(
+		int(g.player.X),
+		int(g.player.Y),
+		int(g.player.X)+constants.Tilesize,
+		int(g.player.Y)+constants.Tilesize,
+	)
 
 	deadEnemies := make(map[int]struct{})
 	for index, enemy := range g.enemies {
@@ -229,6 +254,17 @@ func (g *Game) Update() error {
 			int(enemy.X)+constants.Tilesize,
 			int(enemy.Y)+constants.Tilesize,
 		)
+
+		// if enemy overlaps player
+		if rect.Overlaps(pRect) {
+			if enemy.CombatComp.Attack() {
+				g.player.CombatComp.Damage(enemy.CombatComp.AttackPower())
+
+				if g.player.CombatComp.Health() <= 0 {
+					fmt.Println("The Player has died...   ")
+				}
+			}
+		}
 
 		if cX > rect.Min.X && cX < rect.Max.X && cY > rect.Min.Y && cY < rect.Max.Y {
 			if clicked {
@@ -332,7 +368,9 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	)
 
 	playerFrame := 0
-	if activeAnimation != nil {
+	if g.player.CombatComp.Attacking() {
+		playerFrame = g.player.CombatAnimation(entities.MouseLeftClick).Frame()
+	} else if activeAnimation != nil {
 		playerFrame = activeAnimation.Frame()
 	}
 

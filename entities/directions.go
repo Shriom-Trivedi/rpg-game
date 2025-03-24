@@ -7,4 +7,5 @@ const (
 	Up
 	Left
 	Right
+	MouseLeftClick
 )

@@ -4,6 +4,7 @@ type Combat interface {
 	Health() int
 	AttackPower() int
 	Attacking() bool
+	AttackingStop() bool
 	Attack() bool
 	Update()
 	Damage(amount int)
@@ -39,6 +40,11 @@ func (b *BasicCombat) Attacking() bool {
 	return b.attacking
 }
 
+func (b *BasicCombat) AttackingStop() bool {
+	b.attacking = false
+	return true
+}
+
 func (b *BasicCombat) Attack() bool {
 	b.attacking = true
 	return true
@@ -71,6 +77,11 @@ func (e *EnemyCombat) Attack() bool {
 		return true
 	}
 	return false
+}
+
+func (e *EnemyCombat) AttackingStop() bool {
+	e.attacking = false
+	return true
 }
 
 func (e *EnemyCombat) Update() {

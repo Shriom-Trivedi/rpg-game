@@ -35,3 +35,12 @@ func NewAnimation(first, last, step int, speed float32) *Animation {
 		first,
 	}
 }
+
+func (a *Animation) IsLastFrame() bool {
+	return a.frame >= a.Last
+}
+
+func (a *Animation) Reset() {
+	a.frame = a.First
+	a.frameCounter = a.SpeedInTips // Reset timing as well
+}
