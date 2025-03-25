@@ -235,6 +235,9 @@ func (g *Game) Update() error {
 	}
 
 	cX, cY := ebiten.CursorPosition()
+	cX -= int(g.cam.X)
+	cY -= int(g.cam.Y)
+
 	g.player.CombatComp.Update()
 
 	// player rectangle
