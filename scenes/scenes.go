@@ -6,7 +6,8 @@ type SceneId uint
 
 const (
 	GameSceneId SceneId = iota
-	startSceneId
+	StartSceneId
+	ExitSceneId
 )
 
 type Scene interface {
@@ -15,4 +16,5 @@ type Scene interface {
 	FirstLoad()
 	OnEnter()
 	OnExit()
+	IsSceneloaded() bool
 }

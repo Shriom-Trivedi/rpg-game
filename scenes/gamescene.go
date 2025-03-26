@@ -54,14 +54,17 @@ type GameScene struct {
 	player            *entities.Player
 	playerSpriteSheet *spritesheet.Spritesheet
 	enemySpriteSheet  *spritesheet.Spritesheet
-	animationFrame    int
 	tilemapJSON       *tilemap.TilemapJSON
 	tilemapImg        *ebiten.Image
 	cam               *camera.Camera
-	enemies           []*entities.Enemy
-	potions           []*entities.Potion
-	colliders         []image.Rectangle
-	tilesets          []tileset.Tileset
+
+	enemies   []*entities.Enemy
+	potions   []*entities.Potion
+	colliders []image.Rectangle
+	tilesets  []tileset.Tileset
+
+	animationFrame int
+	loaded         bool
 }
 
 func NewGameScene() *GameScene {
@@ -74,6 +77,7 @@ func NewGameScene() *GameScene {
 		tilemapImg:        nil,
 		cam:               nil,
 		colliders:         make([]image.Rectangle, 0),
+		loaded:            false,
 	}
 }
 
@@ -339,15 +343,16 @@ func (g *GameScene) FirstLoad() {
 		image.Rect(100, 100, 116, 116),
 	}
 
-}
+	g.loaded = true
 
-func (g *GameScene) OnEnter() {
-}
-
-func (g *GameScene) OnExit() {
 }
 
 func (g *GameScene) Update() SceneId {
+
+	if inpututil.IsKeyJustPressed(ebiten.KeyQ) {
+		return ExitSceneId
+	}
+
 	// set velocity to 0 initially to make it stop going in one direction on key press.
 	g.player.Dx = 0
 	g.player.Dy = 0
@@ -511,6 +516,16 @@ func (g *GameScene) Update() SceneId {
 	)
 
 	return GameSceneId
+}
+
+func (g *GameScene) OnEnter() {
+}
+
+func (g *GameScene) OnExit() {
+}
+
+func (g *GameScene) IsSceneloaded() bool {
+	return g.loaded
 }
 
 var _ Scene = (*GameScene)(nil)
