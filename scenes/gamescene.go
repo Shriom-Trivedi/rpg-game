@@ -294,8 +294,83 @@ func (g *GameScene) FirstLoad() {
 		{
 			Sprite: &entities.Sprite{
 				Img: goblinFireImg,
-				X:   150,
+				X:   200,
+				Y:   200,
+			},
+			FollowsPlayer: true,
+			Animations: map[entities.Direction]*animations.Animation{
+				entities.Right: animations.NewAnimation(7, 12, 1, 8.0),
+				entities.Left:  animations.NewAnimation(7, 12, 1, 8.0),
+				entities.Up:    animations.NewAnimation(7, 12, 1, 8.0),
+				entities.Down:  animations.NewAnimation(7, 12, 1, 8.0),
+			},
+			CombatComp: components.NewEnemyCombat(3, 1, 30),
+		},
+		{
+			Sprite: &entities.Sprite{
+				Img: goblinFireImg,
+				X:   250,
+				Y:   250,
+			},
+			FollowsPlayer: true,
+			Animations: map[entities.Direction]*animations.Animation{
+				entities.Right: animations.NewAnimation(7, 12, 1, 8.0),
+				entities.Left:  animations.NewAnimation(7, 12, 1, 8.0),
+				entities.Up:    animations.NewAnimation(7, 12, 1, 8.0),
+				entities.Down:  animations.NewAnimation(7, 12, 1, 8.0),
+			},
+			CombatComp: components.NewEnemyCombat(3, 1, 30),
+		},
+		{
+			Sprite: &entities.Sprite{
+				Img: goblinFireImg,
+				X:   180,
 				Y:   150,
+			},
+			FollowsPlayer: true,
+			Animations: map[entities.Direction]*animations.Animation{
+				entities.Right: animations.NewAnimation(7, 12, 1, 8.0),
+				entities.Left:  animations.NewAnimation(7, 12, 1, 8.0),
+				entities.Up:    animations.NewAnimation(7, 12, 1, 8.0),
+				entities.Down:  animations.NewAnimation(7, 12, 1, 8.0),
+			},
+			CombatComp: components.NewEnemyCombat(3, 1, 30),
+		},
+		{
+			Sprite: &entities.Sprite{
+				Img: goblinFireImg,
+				X:   300,
+				Y:   250,
+			},
+			FollowsPlayer: true,
+			Animations: map[entities.Direction]*animations.Animation{
+				entities.Right: animations.NewAnimation(7, 12, 1, 8.0),
+				entities.Left:  animations.NewAnimation(7, 12, 1, 8.0),
+				entities.Up:    animations.NewAnimation(7, 12, 1, 8.0),
+				entities.Down:  animations.NewAnimation(7, 12, 1, 8.0),
+			},
+			CombatComp: components.NewEnemyCombat(3, 1, 30),
+		},
+		{
+			Sprite: &entities.Sprite{
+				Img: goblinFireImg,
+				X:   250,
+				Y:   250,
+			},
+			FollowsPlayer: true,
+			Animations: map[entities.Direction]*animations.Animation{
+				entities.Right: animations.NewAnimation(7, 12, 1, 8.0),
+				entities.Left:  animations.NewAnimation(7, 12, 1, 8.0),
+				entities.Up:    animations.NewAnimation(7, 12, 1, 8.0),
+				entities.Down:  animations.NewAnimation(7, 12, 1, 8.0),
+			},
+			CombatComp: components.NewEnemyCombat(3, 1, 30),
+		},
+		{
+			Sprite: &entities.Sprite{
+				Img: goblinFireImg,
+				X:   200,
+				Y:   350,
 			},
 			FollowsPlayer: true,
 			Animations: map[entities.Direction]*animations.Animation{

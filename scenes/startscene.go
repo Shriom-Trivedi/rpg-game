@@ -25,11 +25,12 @@ func (s *StartScene) Draw(screen *ebiten.Image) {
 
 func (s *StartScene) FirstLoad() {
 
+
 }
 
 func (s *StartScene) IsSceneloaded() bool {
 	return s.loaded
-}
+};
 
 func (s *StartScene) OnEnter() {
 
